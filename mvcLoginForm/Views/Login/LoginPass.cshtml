@@ -4,9 +4,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head><title></title></head>
     <body>
-        <h1>@Model.nombre + @Model.apellido</h1>
-        <p>@Model.usuario</p>
-        <p>@Model.contrasena</p>
+        <h1>@Model.nombre @Model.apellido</h1>
+        <p>Usuario: @Model.usuario</p>
+        <p>Email: @Model.email</p>
+        <p>Contraseña: @Model.contrasena</p>
         @Html.ActionLink("Cerrar Sesion", "CerrarSesion", "Login")
     </body>
 </html>
