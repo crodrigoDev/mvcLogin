@@ -11,12 +11,20 @@
         <title>Login</title>
     </head>
     <body>
+        @if (ViewBag.Mensaje != null)
+        {
+            <div style="color: red;">
+                @ViewBag.Mensaje
+                </div>
+        }
+
         <form method="post" action="/Login/IniciarSesion">
             <br />
             <input type="text" name="usuario" placeholder="Usuario" required autofocus>
             <br />
             <input type="password" name="contrasena" placeholder="Contraseña" required>
             <br />
+            @Html.ActionLink("¿Olvidaste tu contraseña?", "Recuperar", "Login")
             <button type="submit">
                 Iniciar sesión
             </button>

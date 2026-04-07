@@ -24,6 +24,15 @@ namespace mvcLoginForm.Config
             cmd.Parameters.Clear();
         }
 
+        public void update(string query)
+        {
+            cmd.CommandText = query;
+            cmd.Parameters.Clear();
+            cn.Open();
+            cmd.ExecuteNonQuery();
+            cn.Close();
+        }
+
         public DataTable getDataTable()
         {
             DataTable dt = new DataTable();

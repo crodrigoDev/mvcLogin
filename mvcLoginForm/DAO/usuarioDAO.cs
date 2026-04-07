@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using mvcLoginForm.Config;
+﻿using mvcLoginForm.Config;
 using mvcLoginForm.Mapper;
 using mvcLoginForm.Models;
 using System.Data;
@@ -11,22 +10,25 @@ namespace mvcLoginForm.DAO
         private readonly clsBD _bd;
         public usuarioDAO(clsBD bd) => _bd = bd;
 
-        [HttpPost]
         public bool getLogin(string pass = "", string usuario = "",string email = "")
         {
-            bool access = false;
             if (usuario == "") _bd.Sentencia($"sp_loginPorEmail '{email}', '{pass}'");
             if (email == "") _bd.Sentencia($"sp_loginPorUsuario '{usuario}', '{pass}'");
             DataTable dt = _bd.getDataTable();
-            if (dt.Rows.Count == 0) return access;
+            if (dt.Rows.Count == 0) return false;
             Usuario user = LoginMapper.UsuarioMap(dt.Rows[0]);
-            if (user == null) return access;
-            return access = true;
+            if (user == null) return false;
+            return true;
         }
 
-        public Usuario getUsuario(string usuario)
+        public void putPass(string pass, string usuario, int id=0)
         {
-            _bd.Sentencia($"sp_verDatosUsuario '{usuario}'");
+            _bd.update($"sp_cambiarContrasena {id}, '{pass}', '{usuario}'");
+        }
+
+        public Usuario getUsuario(string user)
+        {
+            _bd.Sentencia($"sp_verDatosUsuario '{user}'");
             DataTable dt = _bd.getDataTable();
             if (dt.Rows.Count == 0) return null;
             return LoginMapper.UsuarioMap(dt.Rows[0]);
