@@ -16,8 +16,6 @@ namespace mvcLoginForm.DAO
             if (email == "") _bd.Sentencia($"sp_loginPorUsuario '{usuario}', '{pass}'");
             DataTable dt = _bd.getDataTable();
             if (dt.Rows.Count == 0) return false;
-            Usuario user = LoginMapper.UsuarioMap(dt.Rows[0]);
-            if (user == null) return false;
             return true;
         }
 
