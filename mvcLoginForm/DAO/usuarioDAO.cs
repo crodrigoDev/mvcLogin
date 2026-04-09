@@ -10,12 +10,11 @@ namespace mvcLoginForm.DAO
         private readonly clsBD _bd;
         public usuarioDAO(clsBD bd) => _bd = bd;
 
-        public bool getLogin(string pass = "", string usuario = "",string email = "")
+        public bool getLogin(string user, string pass)
         {
-            if (usuario == "") _bd.Sentencia($"sp_loginPorEmail '{email}', '{pass}'");
-            if (email == "") _bd.Sentencia($"sp_loginPorUsuario '{usuario}', '{pass}'");
+            _bd.Sentencia($"sp_loginPorUsuario '{user}', '{pass}'");
             DataTable dt = _bd.getDataTable();
-            if (dt.Rows.Count == 0) return false;
+            if (dt == null || dt.Rows.Count == 0) return false;
             return true;
         }
 

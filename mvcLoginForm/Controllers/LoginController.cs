@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using mvcLoginForm.DAO;
-using mvcLoginForm.Models;
+using mvcLoginForm.Models.dto;
 
 namespace mvcLoginForm.Controllers
 {
@@ -22,11 +22,16 @@ namespace mvcLoginForm.Controllers
         }
 
         [HttpPost]
-        public IActionResult IniciarSesion(string contrasena = "", string usuario = "", string email = "")
+        public IActionResult IniciarSesion(Login log)
         {
-            bool access = _dao.getLogin(contrasena, usuario, email);
-            if (!access) return View("~/Views/Login/Index.cshtml", ViewBag.Mensaje = "Usuario no encontrado");
-            return View("~/Views/Login/LoginPass.cshtml", _dao.getUsuario(usuario));
+            bool access = _dao.getLogin(log.login, log.contrasena);
+            if (!access)
+            {
+                ViewBag.Mensaje = "Usuario no encontrado";
+                return View("~/Views/Login/Index.cshtml");
+            }
+            
+            return View("~/Views/Login/LoginPass.cshtml", _dao.getUsuario(log.login));
         }
 
         [HttpPost]
