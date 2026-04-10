@@ -1,8 +1,10 @@
-﻿namespace mvcLoginForm.Models.dto
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace mvcLoginForm.Models.dto
 {
     public class Login
     {
-        public string login { get; set; }
-        public string contrasena { get; set; }
+        public string? login { get; set; }
+        public string? contrasena { get; set; }
     }
 }

@@ -6,13 +6,12 @@ namespace mvcLoginForm.Config
     public class clsBD
     {
         private readonly string _cadena;
-
         SqlConnection cn = null;
         SqlCommand cmd = null;
         SqlDataAdapter da = null;
-        public clsBD(IConfiguration config)
+        public clsBD(string valor)
         {
-            _cadena = config.GetConnectionString("DefaultConnection");
+            _cadena = valor;
             cn = new SqlConnection(_cadena);
             cmd = new SqlCommand("", cn);
             da = new SqlDataAdapter(cmd);

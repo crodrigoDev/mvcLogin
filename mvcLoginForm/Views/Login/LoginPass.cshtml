@@ -2,12 +2,59 @@
 @{
 }
 <html xmlns="http://www.w3.org/1999/xhtml">
-    <head><title></title></head>
+    <head>
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <title></title>
+    </head>
     <body>
-        <h1>@Model.nombre @Model.apellido</h1>
-        <p>Usuario: @Model.usuario</p>
-        <p>Email: @Model.email</p>
-        <p>Contraseña: @Model.contrasena</p>
-        @Html.ActionLink("Cerrar Sesion", "CerrarSesion", "Login")
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="card w-50 shadow-sm">
+                <div class="card-header">
+                    <label class="text-black">
+                        INFORMACION PERSONAL
+                    </label>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="row">
+                            <div class="col">
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text" id="nombre">Nombre</span>
+                                    <input type="text" class="form-control" id="nombre" value="@Model.nombre" disabled>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text" id="apellido">Apellido</span>
+                                    <input type="text" class="form-control" id="apellido" value="@Model.apellido" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text" id="usuario">Usuario</span>
+                            <input type="text" class="form-control" id="usuario" value="@Model.usuario" disabled>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text" id="email">Email</span>
+                            <input type="text" class="form-control" id="email" value="@Model.email" disabled>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text" id="contrasena">Contraseña</span>
+                            <input type="text" class="form-control" id="contrasena" value="@Model.contrasena" disabled>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="/Login/CerrarSesion" class="btn btn-danger">Cerrar Sesion</a>
+                </div>
+            </div>
+        </div>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>

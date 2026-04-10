@@ -1,4 +1,15 @@
-Create database UserLogin;
+/*USE master;
+GO
+
+-- Cambia 'TuBaseDeDatos' por el nombre real
+ALTER DATABASE [UserLogin] 
+SET SINGLE_USER 
+WITH ROLLBACK IMMEDIATE;
+GO
+
+DROP DATABASE [UserLogin];*/
+
+Create database UserLogin
 go
 use UserLogin
 go
@@ -17,28 +28,46 @@ insert usuarios values
     ('user2', 'Pedro', 'Ramirez', 'user2@gmail.com', 'pass456'),
     ('user3', 'Alberto', 'Gomez', 'user3@gmail.com', 'pass654')
 go
-create procedure sp_loginPorUsuario
-    @_user char(30),
+create procedure sp_validarLogin
+    @_login char(30),
     @_pass char(30)
     as
-	select usuario from usuarios where usuario=@_user and contrasena = @_pass
+	select usuario from usuarios where (usuario=@_login or email=@_login) and contrasena = @_pass
 go
-create procedure sp_loginPorEmail
-    @_email char(75),
+create procedure sp_validarContrasena
     @_pass char(30)
     as
-	select usuario from usuarios where email = @_email and contrasena = @_pass
-go  
+    select contrasena from usuarios where contrasena = @_pass
+go
+create procedure sp_validarUsuario
+    @_user char(30)
+    as
+    select usuario from usuarios where usuario = @_user
+go
+create procedure sp_validarEmail
+    @_email char(75)
+    as
+    select email from usuarios where email = @_email
+go
 create procedure sp_cambiarContrasena
     @_id int,
     @_pass char(30),
     @_user char(30)
     as
-	update usuarios set contrasena = @_pass where id = @_id or usuario = @_user
+	update usuarios set contrasena = @_pass where (id = @_id or usuario = @_user)
 go  
 create procedure sp_verDatosUsuario
-    @_user char(30)
+    @_id int
     as
-	select * from usuarios where usuario = @_user
+	select * from usuarios where id = @_id
+go
+create procedure sp_crearUsuario
+    @_user char(30),
+    @_nombre char(60),
+    @_apellido char(60),
+    @_email char(75),
+    @_pass char(30)
+    as
+    insert usuarios(usuario, nombre, apellido, email, contrasena) values(@_user, @_nombre, @_apellido, @_email, @_pass)
 
 -- sp_loginPorUsuario 'rodrick', ''
