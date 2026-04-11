@@ -1,12 +1,11 @@
-﻿@model mvcLoginForm.Models.Usuario
-@{
-}
+﻿@using System.Security.Claims
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
         <title></title>
     </head>
     <body>
+    
         <div class="d-flex justify-content-center align-items-center vh-100">
             <div class="card w-50 shadow-sm">
                 <div class="card-header">
@@ -15,18 +14,26 @@
                     </label>
                 </div>
                 <div class="card-body">
+                    <div class="text-center mb-4">
+                        @if (TempData["ActualizacionExitosa"] != null)
+                        {
+                            <div class="alert alert-success py-2">
+                                @TempData["ActualizacionExitosa"]
+                            </div>
+                        }
+                    </div>
                     <div class="mb-3">
                         <div class="row">
                             <div class="col">
                                 <div class="input-group input-group-lg">
                                     <span class="input-group-text" id="nombre">Nombre</span>
-                                    <input type="text" class="form-control" id="nombre" value="@Model.nombre" disabled>
+                                    <input type="text" class="form-control" id="nombre" value="@User.Identity.Name" disabled>
                                 </div>
                             </div>
                             <div class="col">
                                 <div class="input-group input-group-lg">
                                     <span class="input-group-text" id="apellido">Apellido</span>
-                                    <input type="text" class="form-control" id="apellido" value="@Model.apellido" disabled>
+                                    <input type="text" class="form-control" id="apellido" value="@User.FindFirst("Apellido").Value" disabled>
                                 </div>
                             </div>
                         </div>
@@ -34,24 +41,25 @@
                     <div class="mb-3">
                         <div class="input-group input-group-lg">
                             <span class="input-group-text" id="usuario">Usuario</span>
-                            <input type="text" class="form-control" id="usuario" value="@Model.usuario" disabled>
+                            <input type="text" class="form-control" id="usuario" value="@User.FindFirst("Usuario").Value" disabled>
                         </div>
                     </div>
                     <div class="mb-3">
                         <div class="input-group input-group-lg">
                             <span class="input-group-text" id="email">Email</span>
-                            <input type="text" class="form-control" id="email" value="@Model.email" disabled>
+                            <input type="text" class="form-control" id="email" value="@User.FindFirst(ClaimTypes.Email).Value" disabled>
                         </div>
                     </div>
                     <div class="mb-3">
                         <div class="input-group input-group-lg">
                             <span class="input-group-text" id="contrasena">Contraseña</span>
-                            <input type="text" class="form-control" id="contrasena" value="@Model.contrasena" disabled>
+                            <input type="text" class="form-control" id="contrasena" value="@User.FindFirst("Contraseña").Value" disabled>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer">
+                <div class="card-footer d-flex justify-content-between">
                     <a href="/Login/CerrarSesion" class="btn btn-danger">Cerrar Sesion</a>
+                    <a href="/Login/Actualizar" class="btn btn-warning">Editar</a>
                 </div>
             </div>
         </div>

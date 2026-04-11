@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using mvcLoginForm.DAO;
+using mvcLoginForm.Models;
 using mvcLoginForm.Models.dto;
 using System.Security.Claims;
 
@@ -19,28 +21,32 @@ namespace mvcLoginForm.Controllers
             if (c.Identity != null)
             {
                 if (c.Identity.IsAuthenticated)
-                    return RedirectToAction("LoginPass", "Login", new { id = int.Parse(c.Identity.Name) });
+                    return RedirectToAction("LoginPass", "Login");
             }
             return View();
         }
 
-        [Authorize]
+        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult LoginPass(int id)
+        public IActionResult LoginPass()
         {
-            return View(_dao.getUsuario(id));
+            return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> IniciarSesion(Login log)
         {
-            int access = _dao.getLogin(log.login, log.contrasena);
-            if (access != 0)
+            Usuario usuario = _dao.getLogin(log.login!, log.contrasena!);
+            if (usuario != null)
             {
                 List<Claim> c = new List<Claim>()
                 {
-                    new Claim(ClaimTypes.Name, access.ToString()),
-                    new Claim(ClaimTypes.NameIdentifier, access.ToString())
+                    new Claim(ClaimTypes.Name, usuario.nombre!),
+                    new Claim("Apellido", usuario.apellido!),
+                    new Claim("Usuario", usuario.usuario!),
+                    new Claim(ClaimTypes.Email, usuario.email!),
+                    new Claim("Contraseña", usuario.contrasena!),
+                    new Claim(ClaimTypes.NameIdentifier, usuario.id.ToString())
                 };
                 ClaimsIdentity ci = new(c, CookieAuthenticationDefaults.AuthenticationScheme);
                 AuthenticationProperties ap = new();
@@ -50,12 +56,13 @@ namespace mvcLoginForm.Controllers
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(ci), ap);
 
-                return RedirectToAction("LoginPass", "Login", new { id = access });
+                return RedirectToAction("LoginPass", "Login");
             }
             TempData["MensajeError"] = "Usuario no encontrado";
             return RedirectToAction("Index", "Login");
         }
 
+        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
         public async Task<IActionResult> CerrarSesion()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -70,7 +77,7 @@ namespace mvcLoginForm.Controllers
         [HttpPost]
         public IActionResult CambiarPass(Recuperar recuperar)
         {
-            bool vUsuario = _dao.validarUsuario(recuperar.usuario);
+            bool vUsuario = _dao.validarUsuario(null,recuperar.usuario);
             if (vUsuario)
             {
                 if (recuperar.contrasena != recuperar.r_contrasena)
@@ -78,8 +85,8 @@ namespace mvcLoginForm.Controllers
                     ViewBag.Mensaje = "Las dos contraseñas deben ser iguales";
                     return View("~/Views/Login/Recuperar.cshtml");
                 }
-                bool vPass = _dao.validarPass(recuperar.contrasena);
-                if (vPass)
+                bool vPass = _dao.validarPass(null,recuperar.contrasena);
+                if (!vPass)
                 {
                     _dao.putPass(recuperar.contrasena, recuperar.usuario, recuperar.id);
                     TempData["PassExitoso"] = "Contraseña cambiada correctamente";
@@ -99,10 +106,10 @@ namespace mvcLoginForm.Controllers
 
         public IActionResult CrearUsuario(Crear crear)
         {
-            bool vUsuario = _dao.validarUsuario(crear.usuario);
+            bool vUsuario = _dao.validarUsuario(null,crear.usuario);
             if (!vUsuario)
             {
-                bool vEmail = _dao.validarEmail(crear.email);
+                bool vEmail = _dao.validarEmail(null, crear.email);
                 if (!vEmail)
                 {
                     if (crear.contrasena == crear.r_contrasena)
@@ -120,6 +127,51 @@ namespace mvcLoginForm.Controllers
             }
             ViewBag.Mensaje = "El usuario ya existe, elija otro";
             return View("~/Views/Login/Registrar.cshtml");
+        }
+
+        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+        public IActionResult Actualizar()
+        {
+            return View();
+        }
+
+        [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> ActualizarUsuario(Crear crear)
+        {
+            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
+            bool vUsuario = _dao.validarUsuario(userId,crear.usuario);
+            if (!vUsuario)
+            {
+                bool vEmail = _dao.validarEmail(userId,crear.email);
+                if (!vEmail)
+                {
+                    if (crear.contrasena == crear.r_contrasena)
+                    {
+                        _dao.actualizarUsuario(userId, crear.usuario, crear.nombre, crear.apellido, crear.email, crear.contrasena);
+                        List<Claim> c = new List<Claim>()
+                        {
+                            new Claim(ClaimTypes.Name, crear.nombre!),
+                            new Claim("Apellido", crear.apellido!),
+                            new Claim("Usuario", crear.usuario!),
+                            new Claim(ClaimTypes.Email, crear.email!),
+                            new Claim("Contraseña", crear.contrasena!), 
+                            new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+                        };
+
+                        ClaimsIdentity ci = new(c, CookieAuthenticationDefaults.AuthenticationScheme);
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(ci));
+                        TempData["ActualizacionExitosa"] = "Usuario actualizado exitosamente";
+                        return RedirectToAction("LoginPass", "Login");
+                    }
+                    ViewBag.Mensaje = "Las dos contraseñas deben ser iguales";
+                    return View("~/Views/Login/Actualizar.cshtml");
+                }
+                ViewBag.Mensaje = "El correo ya esta en uso";
+                return View("~/Views/Login/Actualizar.cshtml");
+
+            }
+            ViewBag.Mensaje = "El usuario ya existe, elija otro";
+            return View("~/Views/Login/Actualizar.cshtml");
         }
     }
 }

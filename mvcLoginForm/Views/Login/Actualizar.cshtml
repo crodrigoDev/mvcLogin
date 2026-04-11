@@ -1,0 +1,80 @@
+﻿@using System.Security.Claims
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <title></title>
+</head>
+<body>
+    <div class="d-flex justify-content-center align-items-center vh-100">
+        <div class="card w-50 shadow-sm">
+            <div class="card-header d-flex gap-2 align-items-center">
+                <div class="text-start">
+                    @Html.ActionLink("< Volver", "LoginPass", "Login", null, new { @class = "text-decoration-none small" })
+                </div>
+                <label class="text-black">
+                    ACTUALIZAR PERFIL
+                </label>
+            </div>
+            <form method="post" action="/Login/ActualizarUsuario">
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        @if (ViewBag.Mensaje != null)
+                        {
+                            <div class="alert alert-danger py-2">
+                                @ViewBag.Mensaje
+                            </div>
+                        }
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <div class="col">
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text" id="nombre">Nombre</span>
+                                    <input type="text" class="form-control" name="nombre" value="@User.Identity?.Name" required >
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text" id="apellido">Apellido</span>
+                                    <input type="text" class="form-control" name="apellido" value="@User.FindFirst("Apellido")?.Value" required >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text" id="usuario">Usuario</span>
+                            <input type="text" class="form-control" name="usuario" value="@User.FindFirst("Usuario")?.Value" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text" id="email">Email</span>
+                            <input type="text" class="form-control" name="email" value="@User.FindFirst(ClaimTypes.Email)?.Value" required >
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text" id="contrasena">Nueva Contraseña</span>
+                            <input type="text" class="form-control" name="contrasena" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text" id="contrasena">Repetir Contraseña</span>
+                            <input type="text" class="form-control" name="r_contrasena" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <label class="text-black-50">Usuario en edicion</label>
+                    <input type="submit" class="btn btn-warning" value="Guardar">
+                </div>
+            </form>
+            
+        </div>
+    </div>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+    
