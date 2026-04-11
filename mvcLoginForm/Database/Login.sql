@@ -35,10 +35,11 @@ create procedure sp_validarLogin
 	select * from usuarios where (usuario=@_login or email=@_login) and contrasena = @_pass
 go
 create procedure sp_validarContrasena
-    @id_actual int = NULL,
+    @_id int,
+    @_user char(30),
     @_pass char(30)
     as
-    select contrasena from usuarios where contrasena = @_pass AND ( @id_actual IS NULL OR id <> @id_actual)
+    select contrasena from usuarios where contrasena = @_pass AND (usuario = @_user or id = @_id)
 go
 create procedure sp_validarUsuario
     @id_actual int = NULL,
@@ -53,16 +54,10 @@ create procedure sp_validarEmail
     select email from usuarios where email = @_email AND ( @id_actual IS NULL OR id <> @id_actual)
 go
 create procedure sp_cambiarContrasena
-    @_id int,
     @_pass char(30),
     @_user char(30)
     as
-	update usuarios set contrasena = @_pass where (id = @_id or usuario = @_user)
-go  
-create procedure sp_verDatosUsuario
-    @_id int
-    as
-	select * from usuarios where id = @_id
+	update usuarios set contrasena = @_pass where usuario = @_user
 go
 create procedure sp_crearUsuario
     @_user char(30),
@@ -83,4 +78,5 @@ create procedure sp_actualizarUsuario
     as
     update usuarios set usuario = @_user, nombre = @_nombre, apellido = @_apellido, email = @_email, contrasena = @_pass where id= @_id
 
--- sp_loginPorUsuario 'rodrick', ''
+-- sp_validarContrasena 2, '' , '12313'
+-- sp_validarUsuario null, 'user1'

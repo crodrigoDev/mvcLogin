@@ -18,50 +18,47 @@ namespace mvcLoginForm.DAO
             return LoginMapper.UsuarioMap(dt.Rows[0]);
         }
 
-        public void putPass(string pass, string usuario, int id = 0)
+        public void putPass(string pass, string usuario)
         {
-            _bd.update($"sp_cambiarContrasena {id}, '{pass}', '{usuario}'");
+            _bd.update($"sp_cambiarContrasena '{pass}', '{usuario}'");
+        }
+        public void crearUsuario(string usuario, string nombre, string apellido, string email, string contrasena)
+        {
+            _bd.update($"sp_crearUsuario '{usuario}', '{nombre}', '{apellido}', '{email}', '{contrasena}'");
         }
 
+        public void actualizarUsuario(int id, string usuario, string nombre, string apellido, string email, string contrasena)
+        {
+            _bd.update($"sp_actualizarUsuario {id}, '{usuario}', '{nombre}', '{apellido}', '{email}', '{contrasena}'");
+        }
+
+
+        // Validaciones
         public bool validarUsuario(int? id, string user)
         {
-            _bd.Sentencia($"sp_validarUsuario {id}, '{user}'");
+            string idValue = id.HasValue ? id.Value.ToString() : "NULL";
+            _bd.Sentencia($"sp_validarUsuario {idValue}, '{user}'");
             DataTable dt = _bd.getDataTable();
             if (dt.Rows.Count == 0) return false;
             return true;
         }
 
-        public bool validarPass(int? id, string pass)
+        public bool validarPass(int? id, string user, string pass)
         {
-            _bd.Sentencia($"sp_validarContrasena {id}, '{pass}'");
+            string idValue = id.HasValue ? id.Value.ToString() : "NULL";
+            _bd.Sentencia($"sp_validarContrasena {idValue}, '{user}', '{pass}'");
             DataTable dt = _bd.getDataTable();
             if (dt.Rows.Count == 0) return false;
             return true;
         }
         public bool validarEmail(int? id,string email)
         {
-            _bd.Sentencia($"sp_validarEmail {id}, '{email}'");
+            string idValue = id.HasValue ? id.Value.ToString() : "NULL";
+            _bd.Sentencia($"sp_validarEmail {idValue}, '{email}'");
             DataTable dt = _bd.getDataTable();
             if (dt.Rows.Count == 0) return false;
             return true;
         }
-
-        public Usuario getUsuario(int id)
-        {
-            _bd.Sentencia($"sp_verDatosUsuario {id}");
-            DataTable dt = _bd.getDataTable();
-            if (dt.Rows.Count == 0) return null;
-            return LoginMapper.UsuarioMap(dt.Rows[0]);
-        }
-
-        public void crearUsuario(string usuario, string nombre, string apellido, string email, string contrasena)
-        {
-            _bd.update($"sp_crearUsuario '{usuario}', '{nombre}', '{apellido}', '{email}', '{contrasena}'");
-        }
-
-        public void actualizarUsuario(int id,string usuario, string nombre, string apellido, string email, string contrasena)
-        {
-            _bd.update($"sp_actualizarUsuario {id}, '{usuario}', '{nombre}', '{apellido}', '{email}', '{contrasena}'");
-        }
+        
     }
 }
